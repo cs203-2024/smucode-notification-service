@@ -11,7 +11,7 @@ import org.mapstruct.Named;
 public interface NotificationMapper {
 
     @Mapping(source = "type", target = "type", qualifiedByName = "stringToNotificationType")
-    Notification NotificationDTOtoNotification(NotificationDTO notificationDTO);
+    Notification notificationDTOtoNotification(NotificationDTO notificationDTO);
 
 
     @Named("stringToNotificationType")

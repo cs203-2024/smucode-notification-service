@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,13 +34,11 @@ public class NotificationController {
     public ResponseEntity<Notification> createNotification(
         @RequestBody @Valid NotificationDTO notificationDTO
     ) {
-
         try {
-            return new ResponseEntity<>(
+            return ResponseEntity.ok(
                     notificationService.createNotification(
-                            notificationMapper.NotificationDTOtoNotification(notificationDTO)
-                    ),
-                    HttpStatus.CREATED
+                            notificationMapper.notificationDTOtoNotification(notificationDTO)
+                    )
             );
         } catch (IllegalArgumentException e) {
             throw new ApiRequestException("Invalid notification type");
