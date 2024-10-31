@@ -8,6 +8,7 @@ import com.cs203.smucode.services.INotificationService;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,31 +47,51 @@ public class NotificationController {
             throw new ApiRequestException("Something went wrong creating a notification");
         }
     }
-    @GetMapping("/{username}/")
+    @GetMapping("/{username}")
     public ResponseEntity<List<Notification>> getNotificationsByUsername(
         @PathVariable String username
     ) {
-        return ResponseEntity.ok(
-            notificationService.getNotificationsByUsername(username)
-        );
+        try {
+            return ResponseEntity.ok(
+                    notificationService.getNotificationsByUsername(username)
+            );
+        } catch (Exception e) {
+            throw new ApiRequestException("Something went wrong getting the notifications");
+        }
     }
 
     @GetMapping("/{username}/unread")
     public ResponseEntity<List<Notification>> getUnreadNotificationsByUsername(
         @PathVariable String username
     ) {
-        return ResponseEntity.ok(
-            notificationService.getUnreadNotificationsByUsername(username)
-        );
+        try {
+            return ResponseEntity.ok(
+                    notificationService.getUnreadNotificationsByUsername(username)
+            );
+        } catch (Exception e) {
+            throw new ApiRequestException("Something went wrong getting the notifications");
+        }
     }
 
     @PatchMapping("/{id}/read")
     public ResponseEntity<Notification> markAsRead(@PathVariable UUID id) {
-        return ResponseEntity.ok(notificationService.markAsRead(id));
+        try {
+            return ResponseEntity.ok(notificationService.markAsRead(id));
+        } catch (EntityNotFoundException e) {
+            throw new ApiRequestException("This notification does not exist");
+        } catch (Exception e) {
+            throw new ApiRequestException("Something went wrong when updating the notification");
+        }
     }
 
     @PatchMapping("/{id}/unread")
     public ResponseEntity<Notification> markAsUnRead(@PathVariable UUID id) {
-        return ResponseEntity.ok(notificationService.markAsUnread(id));
+        try {
+            return ResponseEntity.ok(notificationService.markAsUnread(id));
+        } catch (EntityNotFoundException e) {
+            throw new ApiRequestException("This notification does not exist");
+        } catch (Exception e) {
+            throw new ApiRequestException("Something went wrong when updating the notification");
+        }
     }
 }
