@@ -49,7 +49,7 @@ public class NotificationServiceImpl implements INotificationService {
     public Notification markAsUnread(UUID id) {
         Notification notification = notificationRepository.findById(id).
                 orElseThrow(EntityNotFoundException::new);
-        notification.setRead(true);
+        notification.setRead(false);
         return notificationRepository.save(notification);
     }
 }
