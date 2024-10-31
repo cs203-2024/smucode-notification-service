@@ -22,10 +22,5 @@ public record NotificationDTO(
     String message,
 
     @NotNull(message = "Notification type cannot be null")
-    String type,
-
-    @NotNull(message = "Created date cannot be null")
-    LocalDateTime createdAt,
-
-    boolean isRead
+    String type
 ) {}
