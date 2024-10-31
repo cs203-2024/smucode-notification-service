@@ -2,6 +2,7 @@ package com.cs203.smucode.controllers;
 
 import com.cs203.smucode.dto.NotificationDTO;
 import com.cs203.smucode.exception.ApiRequestException;
+import com.cs203.smucode.handlers.EventHandler;
 import com.cs203.smucode.mappers.NotificationMapper;
 import com.cs203.smucode.models.Notification;
 import com.cs203.smucode.services.INotificationService;
@@ -10,22 +11,31 @@ import java.util.UUID;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
+
     private final NotificationMapper notificationMapper;
     private final INotificationService notificationService;
+    private final EventHandler eventHandler;
+
 
     @Autowired
     public NotificationController(INotificationService notificationService,
-                                  NotificationMapper notificationMapper) {
+                                  NotificationMapper notificationMapper,
+                                  EventHandler eventHandler) {
         this.notificationService = notificationService;
         this.notificationMapper = notificationMapper;
+        this.eventHandler = eventHandler;
     }
 
     @PostMapping("/")
@@ -33,11 +43,14 @@ public class NotificationController {
         @RequestBody @Valid NotificationDTO notificationDTO
     ) {
         try {
-            return ResponseEntity.ok(
-                    notificationService.createNotification(
-                            notificationMapper.notificationDTOtoNotification(notificationDTO)
-                    )
-            );
+            Notification notification = notificationMapper.notificationDTOtoNotification(notificationDTO);
+            notificationService.createNotification(notification);
+
+            logger.info("Notification created: " + notification);
+            // Handle incoming event, eg. notify subscribed users
+            eventHandler.handleEvent(notification);
+            return ResponseEntity.ok(notification);
+
         } catch (IllegalArgumentException e) {
             throw new ApiRequestException("Invalid notification type");
         } catch (Exception e) {
@@ -91,4 +104,16 @@ public class NotificationController {
             throw new ApiRequestException("Something went wrong when updating the notification");
         }
     }
+
+    @GetMapping("/subscribe/{username}")
+    public SseEmitter subscribe(@PathVariable String username) {
+        logger.info("user: {} has subscribed to notfications", username);
+        return eventHandler.subscribe(username);
+    }
+
+//    // TODO: should this be
+//    @PostMapping("/event")
+//    public void handleEvent(@RequestBody TournamentCreatedEvent event) {
+//        logger.info("received event: {}", event);
+//    }
 }
