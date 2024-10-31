@@ -1,6 +1,14 @@
 package com.cs203.smucode.constants;
 
 public enum NotificationType {
+    SIGNUP_CLOSED,
+    REGISTRATION_ACCEPTED,
+    REGISTRATION_REJECTED,
     ROUND_STARTED,
     ROUND_END,
+    SUSPICIOUS_BEHAVIOUR,
+    TOURNAMENT_START,
+    TOURNAMENT_END,
+    BRACKET_COMPLETED,
+    SYSTEM
 }
