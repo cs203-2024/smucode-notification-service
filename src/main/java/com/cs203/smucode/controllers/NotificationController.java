@@ -46,7 +46,7 @@ public class NotificationController {
             Notification notification = notificationMapper.notificationDTOtoNotification(notificationDTO);
             notificationService.createNotification(notification);
 
-            logger.info("Notification created: " + notification);
+            logger.info("Notification created: {}", notification);
             // Handle incoming event, eg. notify subscribed users
             eventHandler.handleEvent(notification);
             return ResponseEntity.ok(notification);
