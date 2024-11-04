@@ -105,9 +105,8 @@ public class NotificationController {
         }
     }
 
-    @GetMapping("/subscribe/{username}")
+    @PostMapping("/subscribe/{username}")
     public SseEmitter subscribe(@PathVariable String username) {
-        logger.info("user: {} has subscribed to notfications", username);
         return eventHandler.subscribe(username);
     }
 
