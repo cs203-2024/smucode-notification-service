@@ -74,9 +74,13 @@ public class NotificationServiceImpl implements INotificationService {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // Keep connection open indefinitely
         emitters.put(username, emitter); // Include new client into map of emitters
 
-        // Remove emitter on completion or timeout
+        // Graceful shutdown
         emitter.onCompletion(() -> emitters.remove(username));
         emitter.onTimeout(() -> emitters.remove(username));
+        emitter.onError(e -> {
+            emitters.remove(username);  // Clean up the emitter
+            emitter.completeWithError(e);  // Close the emitter with the error
+        });
 
         return emitter;
     }
