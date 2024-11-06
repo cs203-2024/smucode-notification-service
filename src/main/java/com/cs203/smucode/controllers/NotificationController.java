@@ -28,17 +28,32 @@ public class NotificationController {
     private final INotificationService notificationService;
     private final EventHandler eventHandler;
 
-
     @Autowired
     public NotificationController(INotificationService notificationService,
-                                  NotificationMapper notificationMapper,
-                                  EventHandler eventHandler) {
+                                  NotificationMapper notificationMapper, EventHandler eventHandler) {
         this.notificationService = notificationService;
         this.notificationMapper = notificationMapper;
         this.eventHandler = eventHandler;
     }
 
-    @PostMapping("/")
+    /**
+     * Endpoint to handle incoming notifications from event services.
+     *
+     * <p>This method receives a notification payload, validates and converts it,
+     * and then triggers any associated event handling logic.
+     * It persists the notification and sends it to relevant subscribers in real-time.
+     * </p>
+     *
+     * @param notificationDTO The notification DTO received from
+     *                        the event-sending service, containing details such
+     *                        as message type, recipient information, and content.
+     * @return ResponseEntity containing the created Notification object if successful,
+     *         along with an HTTP 200 OK status.
+     *
+     * @throws ApiRequestException if the notification type is invalid or
+     *         if any error occurs during notification creation or processing.
+     */
+    @PostMapping("/stream")
     public ResponseEntity<Notification> createNotification(
         @RequestBody @Valid NotificationDTO notificationDTO
     ) {
@@ -54,13 +69,29 @@ public class NotificationController {
         } catch (IllegalArgumentException e) {
             throw new ApiRequestException("Invalid notification type");
         } catch (Exception e) {
-            throw new ApiRequestException("Something went wrong creating a notification");
+            throw new ApiRequestException("Something went wrong creating a notification; " + e.getMessage());
         }
     }
+
+    /**
+     * Endpoint to subscribe user to notification service
+     *
+     * @param username
+     * @return SseEmitter which keeps the connection open and streams incoming notifications
+     */
+    @GetMapping("/subscribe/{username}")
+    public SseEmitter subscribe(@PathVariable String username) {
+        return notificationService.subscribe(username);
+    }
+
+    /**
+     * Endpoint to get notifications for user
+     *
+     * @param username
+     * @return
+     */
     @GetMapping("/{username}")
-    public ResponseEntity<List<Notification>> getNotificationsByUsername(
-        @PathVariable String username
-    ) {
+    public ResponseEntity<List<Notification>> getNotificationsByUsername(@PathVariable String username) {
         try {
             return ResponseEntity.ok(
                     notificationService.getNotificationsByUsername(username)
@@ -70,6 +101,12 @@ public class NotificationController {
         }
     }
 
+    /**
+     * Endpoint to get all unread notifications for user
+     *
+     * @param username
+     * @return
+     */
     @GetMapping("/{username}/unread")
     public ResponseEntity<List<Notification>> getUnreadNotificationsByUsername(
         @PathVariable String username
@@ -83,6 +120,12 @@ public class NotificationController {
         }
     }
 
+    /**
+     * Endpoint to update notification as "read"
+     *
+     * @param id
+     * @return
+     */
     @PatchMapping("/{id}/read")
     public ResponseEntity<Notification> markAsRead(@PathVariable UUID id) {
         try {
@@ -94,6 +137,12 @@ public class NotificationController {
         }
     }
 
+    /**
+     * Endpoint to update notification as "unread"
+     *
+     * @param id
+     * @return
+     */
     @PatchMapping("/{id}/unread")
     public ResponseEntity<Notification> markAsUnRead(@PathVariable UUID id) {
         try {
@@ -105,14 +154,4 @@ public class NotificationController {
         }
     }
 
-    @PostMapping("/subscribe/{username}")
-    public SseEmitter subscribe(@PathVariable String username) {
-        return eventHandler.subscribe(username);
-    }
-
-//    // TODO: should this be
-//    @PostMapping("/event")
-//    public void handleEvent(@RequestBody TournamentCreatedEvent event) {
-//        logger.info("received event: {}", event);
-//    }
 }
