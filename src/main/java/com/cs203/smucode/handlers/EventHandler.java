@@ -1,8 +1,6 @@
 package com.cs203.smucode.handlers;
 
-import com.cs203.smucode.constants.NotificationType;
 import com.cs203.smucode.dto.OutgoingNotificationDTO;
-import com.cs203.smucode.models.Notification;
 import com.cs203.smucode.services.INotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

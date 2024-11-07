@@ -3,7 +3,6 @@ package com.cs203.smucode.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.aspectj.weaver.ast.Not;
 
 import java.util.List;
 import java.util.UUID;
