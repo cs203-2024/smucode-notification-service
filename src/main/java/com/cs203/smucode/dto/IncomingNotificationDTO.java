@@ -23,5 +23,9 @@ public record IncomingNotificationDTO(
     String type,
 
     @NotEmpty(message = "Recipients cannot be empty")
-    List<String> recipients
+    List<String> recipients,
+
+    @NotNull(message = "Notification category cannot be null")
+    String category
+
 ) {}

@@ -3,6 +3,7 @@ package com.cs203.smucode.controllers;
 import com.cs203.smucode.dto.IncomingNotificationDTO;
 import com.cs203.smucode.dto.OutgoingNotificationDTO;
 import com.cs203.smucode.exception.ApiRequestException;
+import com.cs203.smucode.exception.InvalidTokenException;
 import com.cs203.smucode.handlers.EventHandler;
 import com.cs203.smucode.mappers.NotificationMapper;
 import com.cs203.smucode.models.Notification;
@@ -16,7 +17,10 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -64,9 +68,11 @@ public class NotificationController {
             notificationService.createNotification(notification);
 
             logger.info("Notification created: {}", notification);
+
             // Handle incoming event, eg. notify subscribed users
-            eventHandler.handleEvent(notification);
-            return ResponseEntity.ok(notificationMapper.notificationToOutgoingNotificationDTO(notification));
+            OutgoingNotificationDTO outgoingNotificationDTO = notificationMapper.notificationToOutgoingNotificationDTO(notification);
+            eventHandler.handleEvent(notificationDTO.recipients(), outgoingNotificationDTO);
+            return ResponseEntity.ok(outgoingNotificationDTO);
 
         } catch (IllegalArgumentException e) {
             throw new ApiRequestException("Invalid notification type");
@@ -79,24 +85,37 @@ public class NotificationController {
     /**
      * Endpoint to subscribe user to notification service
      *
-     * @param username
+     * @param jwt the jwt token containing the subject
      * @return SseEmitter which keeps the connection open and streams incoming notifications
      */
-    @GetMapping("/subscribe/{username}")
-    public SseEmitter subscribe(@PathVariable String username) {
-        return notificationService.subscribe(username);
+    @GetMapping(path ="/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@AuthenticationPrincipal Jwt jwt) {
+        try {
+            validateJwt(jwt);
+            logger.info("Subscribing");
+            return notificationService.subscribe(this.extractUsername(jwt));
+        } catch (InvalidTokenException e) {
+            throw new InvalidTokenException("Invalid token");
+        } catch (ApiRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApiRequestException("Something went wrong subscribing to a notification");
+        }
     }
 
     /**
      * Endpoint to get notifications for user
      *
-     * @param username
-     * @return
+     * @param jwt the jwt token containing the subject
+     * @return list of all notifications (read + unread) for the user
      */
-    @GetMapping("/{username}")
-    public ResponseEntity<List<OutgoingNotificationDTO>> getNotificationsByUsername(@PathVariable String username) {
+    @GetMapping("/")
+    public ResponseEntity<List<OutgoingNotificationDTO>> getNotificationsByUsername(@AuthenticationPrincipal Jwt jwt) {
         try {
-            List<Notification> notifications = notificationService.getNotificationsByUsername(username);
+            validateJwt(jwt);
+            List<Notification> notifications = notificationService.getNotificationsByUsername(
+                    this.extractUsername(jwt)
+            );
             List<OutgoingNotificationDTO> notificationDTOs =
                     notificationMapper.notificationsToOutgoingNotificationDTOs(notifications);
             return ResponseEntity.ok(notificationDTOs);
@@ -109,15 +128,17 @@ public class NotificationController {
     /**
      * Endpoint to get all unread notifications for user
      *
-     * @param username
-     * @return
+     * @param jwt the jwt token containing the subject
+     * @return list of all notifications (unread) for the user
      */
-    @GetMapping("/{username}/unread")
+    @GetMapping("/unread")
     public ResponseEntity<List<OutgoingNotificationDTO>> getUnreadNotificationsByUsername(
-        @PathVariable String username
+        @AuthenticationPrincipal Jwt jwt
     ) {
         try {
-            List<Notification> notifications = notificationService.getUnreadNotificationsByUsername(username);
+            List<Notification> notifications = notificationService.getUnreadNotificationsByUsername(
+                    this.extractUsername(jwt)
+            );
             List<OutgoingNotificationDTO> notificationDTOs =
                     notificationMapper.notificationsToOutgoingNotificationDTOs(notifications);
             return ResponseEntity.ok(notificationDTOs);
@@ -169,4 +190,14 @@ public class NotificationController {
         }
     }
 
+
+    private void validateJwt(@AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            throw new InvalidTokenException("Invalid token");
+        }
+    }
+
+    private String extractUsername(@AuthenticationPrincipal Jwt jwt) {
+        return jwt.getSubject();
+    }
 }

@@ -1,7 +1,6 @@
 package com.cs203.smucode.handlers;
 
-import com.cs203.smucode.constants.NotificationType;
-import com.cs203.smucode.models.Notification;
+import com.cs203.smucode.dto.OutgoingNotificationDTO;
 import com.cs203.smucode.services.INotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +28,10 @@ public class EventHandler {
      *
      * @param notification incoming notification
      */
-    public void handleEvent(Notification notification) {
+    public void handleEvent(List<String> recipients, OutgoingNotificationDTO notification) {
         logger.info("Received event: {}", notification);
 
-        // Save event in notifications DB
-        notificationService.createNotification(notification);
-
         // Notify recipients about the tournament start
-        List<String> recipients = notification.getRecipients();
         for (String recipient : recipients) {
             logger.info("Sending event: {} to user: {}", notification, recipient);
             sendNotification(

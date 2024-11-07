@@ -3,15 +3,14 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 @Getter
 public class ApiException {
-    private final List<String> message;
+    private final String message;
     private final HttpStatus httpStatus;
     private final ZonedDateTime timestamp;
 
-    public ApiException(List<String> message,
+    public ApiException(String message,
                         HttpStatus httpStatus,
                         ZonedDateTime timestamp) {
         this.message = message;

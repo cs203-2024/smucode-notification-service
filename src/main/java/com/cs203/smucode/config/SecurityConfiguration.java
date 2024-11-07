@@ -29,7 +29,7 @@ public class SecurityConfiguration {
         throws Exception {
         http.authorizeHttpRequests(
             // need change this
-            auth -> auth.anyRequest().permitAll()
+            auth -> auth.anyRequest().authenticated()
         );
 
         http.sessionManagement(
@@ -40,9 +40,9 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable); // Disable CSRF protection since we are using JWT
         http.cors(Customizer.withDefaults());
 
-        // http.oauth2ResourceServer(oauth2 ->
-        //     oauth2.jwt(Customizer.withDefaults())
-        // );
+         http.oauth2ResourceServer(oauth2 ->
+             oauth2.jwt(Customizer.withDefaults())
+         );
         return http.build();
     }
 

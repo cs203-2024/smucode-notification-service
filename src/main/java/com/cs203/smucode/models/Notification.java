@@ -1,5 +1,6 @@
 package com.cs203.smucode.models;
 
+import com.cs203.smucode.constants.NotificationCategory;
 import com.cs203.smucode.constants.NotificationType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -24,9 +25,6 @@ public class Notification {
     private UUID tournamentId;
 
     @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false)
     private String tournamentName;
 
     @Column(nullable = false)
@@ -34,6 +32,9 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     private NotificationType type;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationCategory category;
 
     private LocalDateTime createdAt;
     private boolean isRead;
