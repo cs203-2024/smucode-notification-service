@@ -2,12 +2,8 @@ package com.cs203.smucode.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import java.time.ZonedDateTime;
 
@@ -17,28 +13,21 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiException> handleApiRequestException(ApiRequestException e) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
         ApiException apiException = new ApiException(
-                List.of(e.getMessage()),
+                e.getMessage(),
                 badRequest,
                 ZonedDateTime.now()
         );
         return new ResponseEntity<>(apiException, badRequest);
     }
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiException> handleValidationExceptions(
-            MethodArgumentNotValidException e) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        List<String> errors = new ArrayList<>();
 
-        e.getBindingResult().getAllErrors().forEach((error) -> {
-            String errorMessage = error.getDefaultMessage();
-            errors.add(errorMessage);
-        });
-
+    @ExceptionHandler(value = {InvalidTokenException.class})
+    public ResponseEntity<ApiException> handleInvalidTokenException(InvalidTokenException e) {
+        HttpStatus unauthorized = HttpStatus.UNAUTHORIZED;
         ApiException apiException = new ApiException(
-                errors,
-                badRequest,
+                e.getMessage(),
+                unauthorized,
                 ZonedDateTime.now()
         );
-        return new ResponseEntity<>(apiException, badRequest);
+        return new ResponseEntity<>(apiException, unauthorized);
     }
 }
