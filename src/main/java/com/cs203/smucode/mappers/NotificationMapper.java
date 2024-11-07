@@ -29,6 +29,5 @@ public interface NotificationMapper {
     @Named("notificationTypeToString")
     default String notificationTypeToString(NotificationType type) {
         return type.toString().toLowerCase();
-
     }
 }

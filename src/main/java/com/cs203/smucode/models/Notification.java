@@ -24,9 +24,6 @@ public class Notification {
     private UUID tournamentId;
 
     @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false)
     private String tournamentName;
 
     @Column(nullable = false)
