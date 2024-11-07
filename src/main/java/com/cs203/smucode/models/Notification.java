@@ -1,5 +1,6 @@
 package com.cs203.smucode.models;
 
+import com.cs203.smucode.constants.NotificationCategory;
 import com.cs203.smucode.constants.NotificationType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -31,6 +32,9 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     private NotificationType type;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationCategory category;
 
     private LocalDateTime createdAt;
     private boolean isRead;

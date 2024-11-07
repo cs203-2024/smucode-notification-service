@@ -3,6 +3,7 @@ package com.cs203.smucode.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.aspectj.weaver.ast.Not;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,5 +24,9 @@ public record IncomingNotificationDTO(
     String type,
 
     @NotEmpty(message = "Recipients cannot be empty")
-    List<String> recipients
+    List<String> recipients,
+
+    @NotNull(message = "Notification category cannot be null")
+    String category
+
 ) {}

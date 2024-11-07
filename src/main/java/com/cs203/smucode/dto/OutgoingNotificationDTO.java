@@ -21,5 +21,8 @@ public record OutgoingNotificationDTO(
     String message,
 
     @NotNull(message = "Notification type cannot be null")
-    String type
+    String type,
+
+    @NotNull(message = "Notification category cannot be null")
+    String category
 ) {}
