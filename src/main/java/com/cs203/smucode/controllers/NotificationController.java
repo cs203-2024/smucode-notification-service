@@ -8,7 +8,6 @@ import com.cs203.smucode.mappers.NotificationMapper;
 import com.cs203.smucode.models.Notification;
 import com.cs203.smucode.services.INotificationService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

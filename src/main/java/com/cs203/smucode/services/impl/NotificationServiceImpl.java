@@ -1,6 +1,5 @@
 package com.cs203.smucode.services.impl;
 
-import com.cs203.smucode.handlers.EventHandler;
 import com.cs203.smucode.models.Notification;
 import com.cs203.smucode.repositories.NotificationRepository;
 import com.cs203.smucode.services.INotificationService;
