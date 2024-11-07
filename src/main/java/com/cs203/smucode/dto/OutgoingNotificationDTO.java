@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record OutgoingNotificationDTO(
+    @NotNull(message = "Notification ID cannot be null")
+    UUID id,
+
     @NotNull(message = "Tournament ID cannot be null")
     UUID tournamentId,
 
