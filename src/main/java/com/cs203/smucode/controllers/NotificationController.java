@@ -1,11 +1,14 @@
 package com.cs203.smucode.controllers;
 
-import com.cs203.smucode.dto.NotificationDTO;
+import com.cs203.smucode.dto.IncomingNotificationDTO;
+import com.cs203.smucode.dto.OutgoingNotificationDTO;
 import com.cs203.smucode.exception.ApiRequestException;
 import com.cs203.smucode.handlers.EventHandler;
 import com.cs203.smucode.mappers.NotificationMapper;
 import com.cs203.smucode.models.Notification;
 import com.cs203.smucode.services.INotificationService;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,22 +57,23 @@ public class NotificationController {
      *         if any error occurs during notification creation or processing.
      */
     @PostMapping("/stream")
-    public ResponseEntity<Notification> createNotification(
-        @RequestBody @Valid NotificationDTO notificationDTO
+    public ResponseEntity<OutgoingNotificationDTO> createNotification(
+        @RequestBody @Valid IncomingNotificationDTO notificationDTO
     ) {
         try {
-            Notification notification = notificationMapper.notificationDTOtoNotification(notificationDTO);
+            Notification notification = notificationMapper.incomingNotificationDTOtoNotification(notificationDTO);
             notificationService.createNotification(notification);
 
             logger.info("Notification created: {}", notification);
             // Handle incoming event, eg. notify subscribed users
             eventHandler.handleEvent(notification);
-            return ResponseEntity.ok(notification);
+            return ResponseEntity.ok(notificationMapper.notificationToOutgoingNotificationDTO(notification));
 
         } catch (IllegalArgumentException e) {
             throw new ApiRequestException("Invalid notification type");
         } catch (Exception e) {
-            throw new ApiRequestException("Something went wrong creating a notification; " + e.getMessage());
+            logger.error("Exception during notification creation", e);
+            throw new ApiRequestException("Something went wrong creating a notification");
         }
     }
 
@@ -91,12 +95,14 @@ public class NotificationController {
      * @return
      */
     @GetMapping("/{username}")
-    public ResponseEntity<List<Notification>> getNotificationsByUsername(@PathVariable String username) {
+    public ResponseEntity<List<OutgoingNotificationDTO>> getNotificationsByUsername(@PathVariable String username) {
         try {
-            return ResponseEntity.ok(
-                    notificationService.getNotificationsByUsername(username)
-            );
+            List<Notification> notifications = notificationService.getNotificationsByUsername(username);
+            List<OutgoingNotificationDTO> notificationDTOs =
+                    notificationMapper.notificationsToOutgoingNotificationDTOs(notifications);
+            return ResponseEntity.ok(notificationDTOs);
         } catch (Exception e) {
+            logger.error("Exception during getNotificationsByUsername", e);
             throw new ApiRequestException("Something went wrong getting the notifications");
         }
     }
@@ -108,14 +114,16 @@ public class NotificationController {
      * @return
      */
     @GetMapping("/{username}/unread")
-    public ResponseEntity<List<Notification>> getUnreadNotificationsByUsername(
+    public ResponseEntity<List<OutgoingNotificationDTO>> getUnreadNotificationsByUsername(
         @PathVariable String username
     ) {
         try {
-            return ResponseEntity.ok(
-                    notificationService.getUnreadNotificationsByUsername(username)
-            );
+            List<Notification> notifications = notificationService.getUnreadNotificationsByUsername(username);
+            List<OutgoingNotificationDTO> notificationDTOs =
+                    notificationMapper.notificationsToOutgoingNotificationDTOs(notifications);
+            return ResponseEntity.ok(notificationDTOs);
         } catch (Exception e) {
+            logger.error("Exception during getUnreadNotificationsByUsername", e);
             throw new ApiRequestException("Something went wrong getting the notifications");
         }
     }
@@ -127,12 +135,16 @@ public class NotificationController {
      * @return
      */
     @PatchMapping("/{id}/read")
-    public ResponseEntity<Notification> markAsRead(@PathVariable UUID id) {
+    public ResponseEntity<OutgoingNotificationDTO> markAsRead(@PathVariable UUID id) {
         try {
-            return ResponseEntity.ok(notificationService.markAsRead(id));
+            Notification notification = notificationService.markAsRead(id);
+            OutgoingNotificationDTO notificationDTO =
+                    notificationMapper.notificationToOutgoingNotificationDTO(notification);
+            return ResponseEntity.ok(notificationDTO);
         } catch (EntityNotFoundException e) {
             throw new ApiRequestException("This notification does not exist");
         } catch (Exception e) {
+            logger.error("Exception during markAsRead", e);
             throw new ApiRequestException("Something went wrong when updating the notification");
         }
     }
@@ -144,12 +156,16 @@ public class NotificationController {
      * @return
      */
     @PatchMapping("/{id}/unread")
-    public ResponseEntity<Notification> markAsUnRead(@PathVariable UUID id) {
+    public ResponseEntity<OutgoingNotificationDTO> markAsUnRead(@PathVariable UUID id) {
         try {
-            return ResponseEntity.ok(notificationService.markAsUnread(id));
+            Notification notification = notificationService.markAsUnread(id);
+            OutgoingNotificationDTO notificationDTO =
+                    notificationMapper.notificationToOutgoingNotificationDTO(notification);
+            return ResponseEntity.ok(notificationDTO);
         } catch (EntityNotFoundException e) {
             throw new ApiRequestException("This notification does not exist");
         } catch (Exception e) {
+            logger.error("Exception during markAsUnRead", e);
             throw new ApiRequestException("Something went wrong when updating the notification");
         }
     }
