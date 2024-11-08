@@ -125,29 +125,6 @@ public class NotificationController {
         }
     }
 
-//    /**
-//     * Endpoint to get all unread notifications for user
-//     *
-//     * @param jwt the jwt token containing the subject
-//     * @return list of all notifications (unread) for the user
-//     */
-//    @GetMapping("/unread")
-//    public ResponseEntity<List<OutgoingNotificationDTO>> getUnreadNotificationsByUsername(
-//        @AuthenticationPrincipal Jwt jwt
-//    ) {
-//        try {
-//            List<Notification> notifications = notificationService.getUnreadNotificationsByUsername(
-//                    this.extractUsername(jwt)
-//            );
-//            List<OutgoingNotificationDTO> notificationDTOs =
-//                    notificationMapper.notificationsToOutgoingNotificationDTOs(notifications);
-//            return ResponseEntity.ok(notificationDTOs);
-//        } catch (Exception e) {
-//            logger.error("Exception during getUnreadNotificationsByUsername", e);
-//            throw new ApiRequestException("Something went wrong getting the notifications");
-//        }
-//    }
-
     /**
      * Endpoint to update notification as "read"
      *
@@ -158,10 +135,8 @@ public class NotificationController {
     public ResponseEntity<OutgoingNotificationDTO> markAsRead(@PathVariable UUID id) {
         try {
             Notification notification = notificationService.markAsRead(id);
-            logger.info("notification: {}", notification);
             OutgoingNotificationDTO notificationDTO =
                     notificationMapper.notificationToOutgoingNotificationDTO(notification);
-            logger.info("notificationDTO: {}", notificationDTO);
             return ResponseEntity.ok(notificationDTO);
         } catch (EntityNotFoundException e) {
             throw new ApiRequestException("This notification does not exist");
