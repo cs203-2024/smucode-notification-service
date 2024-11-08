@@ -44,6 +44,6 @@ public class Notification {
             name = "notification_recipients",
             joinColumns = @JoinColumn(name = "notification_id")
     )
-    @Column(name = "participant")
+    @Column(name = "recipient")
     private List<String> recipients;
 }

@@ -22,10 +22,10 @@ public record IncomingNotificationDTO(
     @NotNull(message = "Notification type cannot be null")
     String type,
 
-    @NotEmpty(message = "Recipients cannot be empty")
-    List<String> recipients,
-
     @NotNull(message = "Notification category cannot be null")
-    String category
+    String category,
+
+    @NotEmpty(message = "Recipients cannot be empty")
+    List<String> recipients
 
 ) {}
