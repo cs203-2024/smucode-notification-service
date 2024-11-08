@@ -34,7 +34,7 @@ public class NotificationServiceImpl implements INotificationService {
     @Override
     public Notification createNotification(Notification notification) {
         notification.setCreatedAt(LocalDateTime.now());
-        notification.setRead(false);
+        notification.setIsRead(false);
         return notificationRepository.save(notification);
     }
 
@@ -52,7 +52,8 @@ public class NotificationServiceImpl implements INotificationService {
     public Notification markAsRead(UUID id) {
         Notification notification = notificationRepository.findById(id).
                 orElseThrow(EntityNotFoundException::new);
-        notification.setRead(true);
+        notification.setIsRead(true);
+        logger.info("notification marked as read: {}", notification);
         return notificationRepository.save(notification);
     }
 
@@ -60,7 +61,7 @@ public class NotificationServiceImpl implements INotificationService {
     public Notification markAsUnread(UUID id) {
         Notification notification = notificationRepository.findById(id).
                 orElseThrow(EntityNotFoundException::new);
-        notification.setRead(false);
+        notification.setIsRead(false);
         return notificationRepository.save(notification);
     }
 
