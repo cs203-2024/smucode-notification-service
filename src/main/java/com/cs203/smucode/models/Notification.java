@@ -37,7 +37,8 @@ public class Notification {
     private NotificationCategory category;
 
     private LocalDateTime createdAt;
-    private boolean isRead;
+
+    private Boolean isRead;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -45,5 +46,5 @@ public class Notification {
             joinColumns = @JoinColumn(name = "notification_id")
     )
     @Column(name = "recipient")
-private List<String> recipients;
+    private List<String> recipients;
 }

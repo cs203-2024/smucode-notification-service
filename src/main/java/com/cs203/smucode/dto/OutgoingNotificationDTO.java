@@ -36,7 +36,7 @@ public record OutgoingNotificationDTO(
     LocalDateTime createdAt,
 
     @NotNull(message = "Notification must have read status")
-    boolean isRead
+    Boolean isRead
 
     ) {
     private static final Logger logger = LoggerFactory.getLogger(OutgoingNotificationDTO.class);
