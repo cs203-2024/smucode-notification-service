@@ -36,7 +36,7 @@ public class EventHandler {
             logger.info("Sending event: {} to user: {}", notification, recipient);
             sendNotification(
                     recipient,
-                    notification.toString()
+                    notification.toJson()
             );
         }
     }
