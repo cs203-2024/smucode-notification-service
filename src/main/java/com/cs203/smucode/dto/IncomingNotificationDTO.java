@@ -26,12 +26,6 @@ public record IncomingNotificationDTO(
     @NotNull(message = "Notification category cannot be null")
     String category,
 
-    @NotNull(message = "Notification created time cannot be null")
-    LocalDateTime createdAt,
-
-    @NotNull(message = "Notification must have read status")
-    boolean isRead,
-
     @NotEmpty(message = "Recipients cannot be empty")
     List<String> recipients
 

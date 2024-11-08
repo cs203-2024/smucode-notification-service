@@ -33,6 +33,7 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     public Notification createNotification(Notification notification) {
+        // TODO: move default values to DB
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
         return notificationRepository.save(notification);
