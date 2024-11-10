@@ -28,8 +28,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
         throws Exception {
         http.authorizeHttpRequests(
-            // need change this
-            auth -> auth.anyRequest().authenticated()
+            // only the system is allowed to make notifications
+            auth -> auth.anyRequest().hasAuthority("SCOPE_ROLE_SYSTEM")
         );
 
         http.sessionManagement(
@@ -49,7 +49,8 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000",
+                "https://brawlcode.com"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
