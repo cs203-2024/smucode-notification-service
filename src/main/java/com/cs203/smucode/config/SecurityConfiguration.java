@@ -28,8 +28,12 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
         throws Exception {
         http.authorizeHttpRequests(
-            // only the system is allowed to make notifications
-            auth -> auth.anyRequest().hasAuthority("SCOPE_ROLE_SYSTEM")
+            // only the system is allowed to make notifications, rest can view and mark as read
+            auth -> auth
+                    .requestMatchers("/api/notifications/stream")
+                    .hasAuthority("SCOPE_ROLE_SYSTEM")
+                    .anyRequest()
+                    .authenticated()
         );
 
         http.sessionManagement(
