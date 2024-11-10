@@ -206,19 +206,19 @@ class NotificationServiceImplTest {
     void subscribe_EmitterError_RemovesEmitterAndCompletes() {
         // Arrange
         NotificationRepository mockRepository = mock(NotificationRepository.class);
-        NotificationServiceImpl notificationService = new NotificationServiceImpl(mockRepository);
+        NotificationServiceImpl mockNotiService = new NotificationServiceImpl(mockRepository);
         String testUsername = "testUser";
 
         // Act
-        SseEmitter emitter = notificationService.subscribe(testUsername);
+        SseEmitter emitter = mockNotiService.subscribe(testUsername);
         Consumer<Throwable> errorHandler = (Consumer<Throwable>) ReflectionTestUtils.getField(emitter, "errorCallback");
 
         // Verify emitter was added
-        assertThat(notificationService.getEmitters()).containsKey(testUsername);
+        assertThat(mockNotiService.getEmitters()).containsKey(testUsername);
         errorHandler.accept(new IOException("Test Error"));
 
         // Assert
-        assertThat(notificationService.getEmitters()).doesNotContainKey(testUsername);
+        assertThat(mockNotiService.getEmitters()).doesNotContainKey(testUsername);
 
         // Verify emitter is completed
         assertThatThrownBy(() -> emitter.send("test"))
@@ -229,20 +229,20 @@ class NotificationServiceImplTest {
     void subscribe_EmitterComplete_RemovesEmitter() {
         // Arrange
         NotificationRepository mockRepository = mock(NotificationRepository.class);
-        NotificationServiceImpl notificationService = new NotificationServiceImpl(mockRepository);
+        NotificationServiceImpl mockNotiService = new NotificationServiceImpl(mockRepository);
         String testUsername = "testUser";
 
         // Act
-        SseEmitter emitter = notificationService.subscribe(testUsername);
+        SseEmitter emitter = mockNotiService.subscribe(testUsername);
         Runnable completionHandler = (Runnable) ReflectionTestUtils.getField(emitter, "completionCallback");
 
         // Verify emitter was added
-        assertThat(notificationService.getEmitters()).containsKey(testUsername);
+        assertThat(mockNotiService.getEmitters()).containsKey(testUsername);
 
         completionHandler.run();
 
         // Assert
-        assertThat(notificationService.getEmitters()).doesNotContainKey(testUsername);
+        assertThat(mockNotiService.getEmitters()).doesNotContainKey(testUsername);
 
         // Verify emitter is completed
         assertThatThrownBy(() -> emitter.send("test"))
@@ -253,20 +253,20 @@ class NotificationServiceImplTest {
     void subscribe_EmitterTimeout_RemovesEmitter() {
         // Arrange
         NotificationRepository mockRepository = mock(NotificationRepository.class);
-        NotificationServiceImpl notificationService = new NotificationServiceImpl(mockRepository);
+        NotificationServiceImpl mockNotiService = new NotificationServiceImpl(mockRepository);
         String testUsername = "testUser";
 
         // Act
-        SseEmitter emitter = notificationService.subscribe(testUsername);
+        SseEmitter emitter = mockNotiService.subscribe(testUsername);
         Runnable timeoutHandler = (Runnable) ReflectionTestUtils.getField(emitter, "timeoutCallback");
 
         // Verify emitter was added
-        assertThat(notificationService.getEmitters()).containsKey(testUsername);
+        assertThat(mockNotiService.getEmitters()).containsKey(testUsername);
 
         timeoutHandler.run();
 
         // Assert
-        assertThat(notificationService.getEmitters()).doesNotContainKey(testUsername);
+        assertThat(mockNotiService.getEmitters()).doesNotContainKey(testUsername);
 
         // Verify emitter is completed
         assertThatThrownBy(() -> emitter.send("test"))
