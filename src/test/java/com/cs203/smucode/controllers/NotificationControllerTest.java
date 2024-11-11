@@ -77,7 +77,7 @@ class NotificationControllerTest {
         testNotification.setTournamentId(testTournamentId);
         testNotification.setTournamentName("Test Tournament");
         testNotification.setMessage("Tournament is starting soon!");
-        testNotification.setType(NotificationType.TOURNAMENT_START);
+        testNotification.setType(NotificationType.TOURNAMENT_STARTED);
         testNotification.setCategory(NotificationCategory.ALERT);
         testNotification.setRecipients(Arrays.asList("user1", "user2"));
         testNotification.setIsRead(false);

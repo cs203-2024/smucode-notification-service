@@ -50,7 +50,7 @@ class NotificationServiceImplTest {
         testNotification.setTournamentId(testTournamentId);
         testNotification.setTournamentName(testTournamentName);
         testNotification.setMessage("Test message");
-        testNotification.setType(NotificationType.TOURNAMENT_START);
+        testNotification.setType(NotificationType.TOURNAMENT_STARTED);
         testNotification.setCategory(NotificationCategory.ALERT);
         testNotification.setCreatedAt(LocalDateTime.now());
         testNotification.setIsRead(false);
@@ -65,7 +65,7 @@ class NotificationServiceImplTest {
         newNotification.setTournamentId(testTournamentId);
         newNotification.setTournamentName(testTournamentName);
         newNotification.setMessage("Test message");
-        newNotification.setType(NotificationType.TOURNAMENT_START);
+        newNotification.setType(NotificationType.TOURNAMENT_STARTED);
         newNotification.setCategory(NotificationCategory.ALERT);
         newNotification.setRecipients(testRecipients);
 
@@ -76,7 +76,7 @@ class NotificationServiceImplTest {
         assertFalse(result.getIsRead());
         assertEquals(testTournamentId, result.getTournamentId());
         assertEquals(testTournamentName, result.getTournamentName());
-        assertEquals(NotificationType.TOURNAMENT_START, result.getType());
+        assertEquals(NotificationType.TOURNAMENT_STARTED, result.getType());
         assertEquals(NotificationCategory.ALERT, result.getCategory());
         assertEquals(testRecipients, result.getRecipients());
         verify(notificationRepository).save(any(Notification.class));
@@ -96,7 +96,7 @@ class NotificationServiceImplTest {
         assertEquals(testId, notification.getId());
         assertEquals(testTournamentId, notification.getTournamentId());
         assertEquals(testTournamentName, notification.getTournamentName());
-        assertEquals(NotificationType.TOURNAMENT_START, notification.getType());
+        assertEquals(NotificationType.TOURNAMENT_STARTED, notification.getType());
         assertEquals(NotificationCategory.ALERT, notification.getCategory());
         assertTrue(notification.getRecipients().contains(username));
         verify(notificationRepository).findByUsername(username);
@@ -117,7 +117,7 @@ class NotificationServiceImplTest {
         assertFalse(notification.getIsRead());
         assertEquals(testId, notification.getId());
         assertEquals(testTournamentId, notification.getTournamentId());
-        assertEquals(NotificationType.TOURNAMENT_START, notification.getType());
+        assertEquals(NotificationType.TOURNAMENT_STARTED, notification.getType());
         assertTrue(notification.getRecipients().contains(username));
         verify(notificationRepository).findByUsernameAndIsRead(username, false);
     }
@@ -135,7 +135,7 @@ class NotificationServiceImplTest {
         assertEquals(testId, result.getId());
         assertEquals(testTournamentId, result.getTournamentId());
         assertEquals(testTournamentName, result.getTournamentName());
-        assertEquals(NotificationType.TOURNAMENT_START, result.getType());
+        assertEquals(NotificationType.TOURNAMENT_STARTED, result.getType());
         assertEquals(NotificationCategory.ALERT, result.getCategory());
         assertEquals(testRecipients, result.getRecipients());
         verify(notificationRepository).findById(testId);
@@ -165,7 +165,7 @@ class NotificationServiceImplTest {
         assertEquals(testId, result.getId());
         assertEquals(testTournamentId, result.getTournamentId());
         assertEquals(testTournamentName, result.getTournamentName());
-        assertEquals(NotificationType.TOURNAMENT_START, result.getType());
+        assertEquals(NotificationType.TOURNAMENT_STARTED, result.getType());
         assertEquals(NotificationCategory.ALERT, result.getCategory());
         assertEquals(testRecipients, result.getRecipients());
         verify(notificationRepository).findById(testId);
