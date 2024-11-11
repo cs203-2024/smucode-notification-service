@@ -12,6 +12,14 @@ spring:
     config:
       enabled: false
       uri: ${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:default}
   security:
@@ -28,3 +36,8 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+logging:
+  level:
+    root: INFO
+    com.cs203.smucode: DEBUG
