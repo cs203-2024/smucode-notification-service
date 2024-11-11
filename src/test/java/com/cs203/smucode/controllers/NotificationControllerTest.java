@@ -105,7 +105,7 @@ class NotificationControllerTest {
                     .andExpect(jsonPath("$.tournamentId").value(testTournamentId.toString()))
                     .andExpect(jsonPath("$.tournamentName").value("Test Tournament"))
                     .andExpect(jsonPath("$.message").value("Tournament is starting soon!"))
-                    .andExpect(jsonPath("$.type").value("tournament_start"))
+                    .andExpect(jsonPath("$.type").value("tournament_started"))
                     .andExpect(jsonPath("$.category").value("alert"))
                     .andExpect(jsonPath("$.isRead").value(false));
 
